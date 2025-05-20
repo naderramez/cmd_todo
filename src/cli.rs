@@ -7,7 +7,7 @@ use crossterm::{
     terminal::{self, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use std::{
-    io::{Result, Write, stdout},
+    io::{Error, Result, Write, stdout},
     time::Duration,
 };
 
@@ -56,6 +56,11 @@ impl CliManager {
 
     pub fn list_todos(&mut self) -> Result<()> {
         let todos = self.todos_manager.todos();
+
+        if todos.len() == 0 {
+            eprintln!("Category not found!");
+            return Ok(());
+        }
 
         let mut selected = 0;
 
