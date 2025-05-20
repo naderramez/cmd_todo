@@ -2,7 +2,6 @@ use clap::Parser;
 use cli::{CliArgs, CliManager, TodoAction};
 
 mod cli;
-mod models;
 mod storage;
 mod todo;
 

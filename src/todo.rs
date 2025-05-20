@@ -1,10 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{
-    models,
-    storage::{Storage, StoreableItem},
-};
+use crate::storage::{Storage, StoreableItem};
 
 pub trait Indexable {
     fn id<'a>(&'a self) -> &'a str;
@@ -52,11 +49,6 @@ impl Todo {
         }
     }
 
-    pub fn modify_content(&mut self, text: String) -> &Self {
-        self.content = text;
-        self
-    }
-
     pub fn mark_done(&mut self) -> &Self {
         self.done = true;
         self
@@ -100,8 +92,13 @@ impl TodosManager {
         self.todos()
     }
 
-    pub fn mark_done(&mut self, mut todo: Todo) -> &[Todo] {
-        todo.mark_done();
+    pub fn toggle_done_status(&mut self, mut todo: Todo) -> &[Todo] {
+        if todo.done == false {
+            todo.mark_done();
+        } else {
+            todo.mark_undone();
+        }
+
         self.storage_driver.modify_item::<Todo>(todo);
         self.todos()
     }
