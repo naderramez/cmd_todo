@@ -1,5 +1,5 @@
 use clap::Parser;
-use cli::{CliArgs, CliManager, TodoAction};
+use cli::{CliArgs, TodoAction};
 
 mod cli;
 mod storage;
@@ -7,19 +7,12 @@ mod todo;
 
 pub fn run() {
     let args = CliArgs::parse();
-    let mut cli_manager: Option<CliManager> = None;
     match args.action {
         TodoAction::Create { content, category } => {
-            if cli_manager.is_none() {
-                cli_manager = Some(CliManager::new(category));
-            }
-            cli_manager.unwrap().add_todo(content);
+            cli::add_todo(&category, content);
         }
         TodoAction::List { category } => {
-            if cli_manager.is_none() {
-                cli_manager = Some(CliManager::new(category));
-            }
-            cli_manager.unwrap().list_todos().unwrap();
+            cli::list_todos(&category).unwrap();
         }
     }
 }
