@@ -76,18 +76,25 @@ impl CliManager {
             stdout.flush()?;
 
             for (i, todo) in todos.iter().enumerate() {
+                let todo_line = format!(
+                    "{} - {}",
+                    todo.get_content(),
+                    todo.get_completion_status_text()
+                );
                 if i == selected {
                     queue!(
                         stdout,
                         SetForegroundColor(Color::Yellow),
-                        Print(format!("> {}\n", todo.get_content())),
+                        Print(format!("> {}\n", todo_line)),
                         ResetColor
                     )?;
                 } else {
-                    queue!(stdout, Print(format!("  {}\n", todo.get_content())))?;
+                    queue!(stdout, Print(format!("  {}\n", todo_line)))?;
                 }
                 stdout.flush()?
             }
+
+            println!("\n \n Available actions: [r]emove  [c]omplete  [q]uit");
 
             stdout.flush()?; // Ensure everything is drawn
 

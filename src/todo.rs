@@ -44,6 +44,14 @@ impl Todo {
         &self.content
     }
 
+    pub fn get_completion_status_text(&self) -> &str {
+        if self.done {
+            return "Completed";
+        } else {
+            return "Not Completed";
+        }
+    }
+
     pub fn modify_content(&mut self, text: String) -> &Self {
         self.content = text;
         self
