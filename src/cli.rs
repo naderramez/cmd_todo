@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand, ValueEnum};
+use clap::{Parser, Subcommand};
 use crossterm::{
     cursor,
     event::{self, Event, KeyCode, KeyEventKind},
@@ -6,12 +6,9 @@ use crossterm::{
     style::{Color, Print, ResetColor, SetForegroundColor},
     terminal::{self, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use std::{
-    io::{Error, Result, Write, stdout},
-    time::Duration,
-};
+use std::io::{Result, Write};
 
-use crate::todo::{self, Todo, TodosManager};
+use crate::todo::{self, Indexable, Todo};
 
 #[derive(Debug, Clone, Subcommand)]
 pub enum TodoAction {
@@ -55,7 +52,8 @@ impl CliManager {
     }
 
     pub fn list_todos(&mut self) -> Result<()> {
-        let todos = self.todos_manager.todos();
+        // let todos = self.todos_manager.todos();
+        let mut todos = self.todos_manager.todos().to_vec();
 
         if todos.len() == 0 {
             eprintln!("Category not found!");
@@ -94,7 +92,7 @@ impl CliManager {
                 stdout.flush()?
             }
 
-            println!("\n \n Available actions: [r]emove  [c]omplete  [q]uit");
+            println!("\n \n Available actions: [r]: remove  [s]: status toggle  [q]: quit");
 
             stdout.flush()?; // Ensure everything is drawn
 
@@ -112,13 +110,31 @@ impl CliManager {
                                 selected += 1;
                             }
                         }
+                        KeyCode::Char('r') => {
+                            if let Some(selected_todo) = todos.get(selected) {
+                                self.todos_manager.remove_todo(selected_todo.id());
+                                todos = self.todos_manager.todos().to_vec();
+
+                                if selected == todos.len() {
+                                    selected -= 1;
+                                }
+
+                                if todos.len() == 0 {
+                                    break;
+                                }
+                            }
+                        }
+                        KeyCode::Char('s') => {
+                            if let Some(selected_todo) = todos.get(selected) {
+                                self.todos_manager.toggle_done_status(selected_todo.clone());
+                                todos = self.todos_manager.todos().to_vec();
+                            }
+                        }
                         KeyCode::Char('q') => break,
                         _ => {}
                     }
                 }
             }
-            // if event::poll(Duration::from_millis(200))? {
-            // }
         }
 
         // Cleanup
