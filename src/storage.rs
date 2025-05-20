@@ -47,9 +47,14 @@ impl Storage {
 
     pub fn remove_item<T: StoreableItem>(&mut self, id: &str) {
         let data = self.get_stored_data::<T>();
-        let mut data_vec = Vec::from(data);
-        data_vec.retain(|item| item.id() != id);
-        self.persist_data::<T>(data_vec);
+        if data.len() == 1 {
+            let path = self.get_path();
+            fs::remove_file(path).unwrap();
+        } else {
+            let mut data_vec = Vec::from(data);
+            data_vec.retain(|item| item.id() != id);
+            self.persist_data::<T>(data_vec);
+        }
     }
 
     pub fn modify_item<T: StoreableItem>(&mut self, updated_item: T) {
