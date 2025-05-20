@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::storage::{Storage, StoreableItem};
+use crate::storage::{self, StoreableItem};
 
 pub trait Indexable {
     fn id<'a>(&'a self) -> &'a str;
@@ -33,10 +33,6 @@ impl Todo {
         todo
     }
 
-    pub fn get(self) -> Self {
-        self
-    }
-
     pub fn get_content(&self) -> &str {
         &self.content
     }
@@ -48,58 +44,35 @@ impl Todo {
             return "Not Completed";
         }
     }
-
-    pub fn mark_done(&mut self) -> &Self {
-        self.done = true;
-        self
-    }
-    pub fn mark_undone(&mut self) -> &Self {
-        self.done = false;
-        self
-    }
 }
 
-pub struct TodosManager {
-    todos: Vec<Todo>,
-    storage_driver: Storage,
+pub fn get_todos(namespace: &str) -> Vec<Todo> {
+    storage::get_stored_data::<Todo>(namespace)
+        .into_iter()
+        .map(|todo| todo.clone())
+        .collect()
 }
 
-impl TodosManager {
-    pub fn new(namespace: String) -> TodosManager {
-        Self {
-            todos: Vec::new(),
-            storage_driver: Storage::new(namespace),
-        }
-    }
+fn get_todo_by_id(namespace: &str, id: &str) -> Option<Todo> {
+    let todos = get_todos(namespace);
+    todos.into_iter().find(|todo| todo.id == id)
+}
 
-    pub fn todos(&mut self) -> &[Todo] {
-        self.todos = self
-            .storage_driver
-            .get_stored_data::<Todo>()
-            .into_iter()
-            .map(|todo| todo.clone())
-            .collect();
-        &self.todos
-    }
+pub fn add_todo(namespace: &str, todo: Todo) {
+    storage::add_item(namespace, todo);
+}
 
-    pub fn add_todo(&mut self, todo: Todo) -> &[Todo] {
-        self.storage_driver.add_item(todo.clone());
-        self.todos()
-    }
+pub fn remove_todo(namespace: &str, id: &str) {
+    storage::remove_item::<Todo>(namespace, id);
+}
 
-    pub fn remove_todo(&mut self, id: &str) -> &[Todo] {
-        self.storage_driver.remove_item::<Todo>(id);
-        self.todos()
-    }
-
-    pub fn toggle_done_status(&mut self, mut todo: Todo) -> &[Todo] {
-        if todo.done == false {
-            todo.mark_done();
-        } else {
-            todo.mark_undone();
-        }
-
-        self.storage_driver.modify_item::<Todo>(todo);
-        self.todos()
-    }
+pub fn toggle_done_status(namespace: &str, id: &str) {
+    if let Some(todo) = get_todo_by_id(namespace, id) {
+        let updated_todo = Todo {
+            id: id.to_string(),
+            content: todo.content,
+            done: !todo.done,
+        };
+        storage::modify_item::<Todo>(namespace, updated_todo);
+    };
 }
