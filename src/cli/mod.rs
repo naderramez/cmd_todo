@@ -6,9 +6,15 @@ use crossterm::{
     style::{Color, Print, ResetColor, SetForegroundColor},
     terminal::{self, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use std::io::{Result, Write};
+use std::{
+    io::{Result, Write},
+    path::PathBuf,
+};
 
-use crate::todo::{self, Indexable, Todo};
+use crate::{
+    export::export_data_to_file,
+    todo::{self, Indexable, Todo},
+};
 
 mod args;
 
@@ -106,4 +112,16 @@ pub fn list_todos(namespace: &str) -> Result<()> {
     execute!(stdout, LeaveAlternateScreen, cursor::Show)?;
     terminal::disable_raw_mode()?;
     Ok(())
+}
+
+pub fn export_todos(namespace: &str, export_path: &str) {
+    let todos = todo::get_todos(namespace);
+    let contents = todos
+        .iter()
+        .map(|todo| todo.get_content().to_string())
+        .collect::<Vec<String>>()
+        .join("\n");
+
+    let path: PathBuf = export_path.into();
+    export_data_to_file(contents, path);
 }

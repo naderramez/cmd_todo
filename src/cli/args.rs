@@ -2,6 +2,7 @@ use clap::{Parser, Subcommand};
 
 #[derive(Debug, Clone, Subcommand)]
 pub enum TodoAction {
+    /// Create new todo
     Create {
         /// Todo content
         #[arg(long)]
@@ -10,10 +11,19 @@ pub enum TodoAction {
         #[arg(long)]
         category: String,
     },
+    /// List todos
     List {
         /// Category of the todo
         #[arg(long)]
         category: String,
+    },
+    Export {
+        /// Category of the todo
+        #[arg(long)]
+        category: String,
+        /// Path for exporting todos
+        #[arg(long)]
+        path: String,
     },
 }
 

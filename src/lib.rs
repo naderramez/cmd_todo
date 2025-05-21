@@ -2,6 +2,7 @@ use clap::Parser;
 use cli::{CliArgs, TodoAction};
 
 mod cli;
+mod export;
 mod storage;
 mod todo;
 
@@ -13,6 +14,9 @@ pub fn run() {
         }
         TodoAction::List { category } => {
             cli::list_todos(&category).unwrap();
+        }
+        TodoAction::Export { category, path } => {
+            cli::export_todos(&category, &path);
         }
     }
 }
