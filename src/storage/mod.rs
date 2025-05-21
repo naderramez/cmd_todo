@@ -2,7 +2,9 @@ use std::{fmt::Debug, fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::todo::Indexable;
+pub trait Indexable {
+    fn id<'a>(&'a self) -> &'a str;
+}
 
 pub trait StoreableItem: Serialize + for<'de> Deserialize<'de> + Debug + Indexable {}
 

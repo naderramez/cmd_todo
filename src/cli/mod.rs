@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+pub use args::{CliArgs, TodoAction};
 use crossterm::{
     cursor,
     event::{self, Event, KeyCode, KeyEventKind},
@@ -10,31 +10,7 @@ use std::io::{Result, Write};
 
 use crate::todo::{self, Indexable, Todo};
 
-#[derive(Debug, Clone, Subcommand)]
-pub enum TodoAction {
-    Create {
-        /// Todo content
-        #[arg(long)]
-        content: String,
-        /// Category of the todo
-        #[arg(long)]
-        category: String,
-    },
-    List {
-        /// Category of the todo
-        #[arg(long)]
-        category: String,
-    },
-}
-
-/// Program that manages todos
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-pub struct CliArgs {
-    /// Action to take
-    #[command(subcommand)]
-    pub action: TodoAction,
-}
+mod args;
 
 pub fn add_todo(namespace: &str, content: String) {
     let todo = Todo::new(content);
