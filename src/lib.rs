@@ -18,6 +18,9 @@ pub fn run() {
         TodoAction::Export { category, path } => {
             cli::export_todos(&category, &path);
         }
+        TodoAction::ExportAll { path } => {
+            cli::export_all_todos(&path);
+        }
     }
 }
 
