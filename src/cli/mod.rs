@@ -13,7 +13,7 @@ use std::{
 
 use crate::{
     export::export_data_to_file,
-    todo::{self, Indexable, Todo},
+    todo::{self, Indexable, Todo, get_all_categories},
 };
 
 mod args;
@@ -124,4 +124,14 @@ pub fn export_todos(namespace: &str, export_path: &str) {
 
     let path: PathBuf = export_path.into();
     export_data_to_file(contents, path);
+}
+
+pub fn export_all_todos(export_folder_path: &str) {
+    let categories = get_all_categories();
+
+    for category in categories {
+        let mut file_path = PathBuf::from(export_folder_path);
+        file_path = file_path.join(format!("{}.txt", category.clone()));
+        export_todos(&category, file_path.to_str().unwrap());
+    }
 }

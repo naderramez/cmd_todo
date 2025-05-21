@@ -1,4 +1,4 @@
-use std::{fmt::Debug, fs, path::PathBuf};
+use std::{ffi::OsString, fmt::Debug, fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -60,4 +60,12 @@ pub fn modify_item<T: StoreableItem>(namespace: &str, updated_item: T) {
         *item = updated_item;
     }
     persist_data::<T>(namespace, data_vec);
+}
+
+pub fn get_all_namespaces() -> impl Iterator<Item = OsString> {
+    let path = PathBuf::from("db");
+    let dir = fs::read_dir(path)
+        .unwrap()
+        .map(|result| result.unwrap().file_name());
+    dir
 }

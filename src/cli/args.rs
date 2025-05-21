@@ -17,10 +17,17 @@ pub enum TodoAction {
         #[arg(long)]
         category: String,
     },
+    /// Exports all todos of a category into a file that you specify
     Export {
         /// Category of the todo
         #[arg(long)]
         category: String,
+        /// Path for exporting todos
+        #[arg(long)]
+        path: String,
+    },
+    /// Exports all todos of all categories into a folder that you specify
+    ExportAll {
         /// Path for exporting todos
         #[arg(long)]
         path: String,

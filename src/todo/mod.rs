@@ -1,6 +1,6 @@
 pub use model::{Indexable, Todo};
 
-use crate::storage;
+use crate::storage::{self, get_all_namespaces};
 
 mod model;
 
@@ -30,4 +30,19 @@ pub fn toggle_done_status(namespace: &str, id: &str) {
         let updated_todo = todo.set_status(new_status);
         storage::modify_item::<Todo>(namespace, updated_todo);
     };
+}
+
+pub fn get_all_categories() -> Vec<String> {
+    let categories = get_all_namespaces()
+        .map(|filename| {
+            filename
+                .into_string()
+                .unwrap()
+                .split(".json")
+                .next()
+                .unwrap()
+                .to_string()
+        })
+        .collect();
+    categories
 }
