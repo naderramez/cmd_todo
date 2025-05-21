@@ -4,32 +4,32 @@ use clap::{Parser, Subcommand};
 pub enum TodoAction {
     /// Create new todo
     Create {
-        /// Todo content
-        #[arg(long)]
-        content: String,
         /// Category of the todo
-        #[arg(long)]
+        #[arg(index = 1)]
         category: String,
+        /// Todo content
+        #[arg(index = 2)]
+        content: String,
     },
     /// List todos
     List {
         /// Category of the todo
-        #[arg(long)]
+        #[arg()]
         category: String,
     },
     /// Exports all todos of a category into a file that you specify
     Export {
         /// Category of the todo
-        #[arg(long)]
+        #[arg(index = 1)]
         category: String,
         /// Path for exporting todos
-        #[arg(long)]
+        #[arg(index = 2)]
         path: String,
     },
     /// Exports all todos of all categories into a folder that you specify
     ExportAll {
         /// Path for exporting todos
-        #[arg(long)]
+        #[arg()]
         path: String,
     },
 }
